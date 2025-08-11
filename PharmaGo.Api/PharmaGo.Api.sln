@@ -17,9 +17,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "..\Core\Service
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services Abstraction", "..\Core\Services Abstraction\Services Abstraction.csproj", "{26986F97-6340-4284-B5B7-3D84A2DDC516}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presistence", "..\Infrastructure\Presistence\Presistence.csproj", "{D093A98E-31AB-4633-BB11-E10863AF71AF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presentaion", "..\Infrastructure\Presistence\Presentaion.csproj", "{D093A98E-31AB-4633-BB11-E10863AF71AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presentaion", "..\Infrastructure\Presentaion\Presentaion.csproj", "{C811822D-349D-4352-87E1-612BD58FF480}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presistance", "..\Infrastructure\Presentaion\Presistance.csproj", "{C811822D-349D-4352-87E1-612BD58FF480}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "..\Shared\Shared\Shared.csproj", "{7FE72DEA-5D61-46BD-902D-A7898E3A1C5E}"
 EndProject
