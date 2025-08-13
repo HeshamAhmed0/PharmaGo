@@ -1,6 +1,10 @@
-﻿namespace Domain.Moduls
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Domain.Moduls
 {
-    public class Address :BaseEntity<int>
+
+    [Owned]
+    public class Address 
     {
         public string Street { get; set; }
         public string City { get; set; }

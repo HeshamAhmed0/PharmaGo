@@ -12,10 +12,8 @@ namespace Domain.Moduls
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
         public Address Address { get; set; }
-        public ICollection<CustomerProduct> customerProducts { get; set; }
-        public DeliveryMethod DeliveryMethod { get; set; }
-        public PaymentStatus PaymentStatus { get; set; }
-
+     
+        public ICollection<Order> Orders { get; set; }
 
     }
 }

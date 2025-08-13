@@ -15,6 +15,5 @@ namespace Domain.Moduls
         public decimal ProductPrice { get; set; }
 
         public string PictureUrl { get; set; }
-        public ICollection<CustomerProduct> customerProducts { get; set; }
     }
 }

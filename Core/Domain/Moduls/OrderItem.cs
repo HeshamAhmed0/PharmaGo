@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 
 namespace Domain.Moduls
 {
-    public class CustomerProduct
+    public class OrderItem :BaseEntity<int>
     {
-        public int CustomerId { get; set; }
-        public Customer Customer { get; set; }  
         public int ProductId { get; set; }
         public Product Product { get; set; }
 
+        public int OrderId { get; set; }
+        public Order Order { get; set; }
+
+        public  decimal Price { get; set; }
         public int Quantity { get; set; }
-        public DateTime AddedDate { get; set; }
     }
 }
