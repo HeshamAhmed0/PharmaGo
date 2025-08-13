@@ -1,8 +1,11 @@
 
+using System.Reflection.Metadata;
 using Domain.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Presistance;
 using Presistance.Reposatories;
+using Services;
+using Services_Abstraction;
 
 namespace PharmaGo.Api
 {
@@ -13,30 +16,22 @@ namespace PharmaGo.Api
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddAutoMapper(typeof(AssemblyForAutoMapper).Assembly);
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-           
-            
-            #region Infrastructure
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
-
-            #region StoreDbContext Options
-
             builder.Services.AddDbContext<StoreDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+            builder.Services.AddScoped<IUnitofwork, UnitOfWork>();
+            builder.Services.AddScoped<IProductService,ProductServices>();
+            builder.Services.AddScoped<IServiceManager,ServiceManager>();
 
-            #endregion
-
-            
-            #endregion
-
-
-
+  
             var app = builder.Build();
 
             #region Scop For DbInitializer

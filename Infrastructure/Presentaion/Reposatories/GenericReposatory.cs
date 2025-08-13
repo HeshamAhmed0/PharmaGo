@@ -14,11 +14,16 @@ namespace Presistance.Reposatories
         public async Task AddAsync(TEntity entity)
         {
            await storeDbContext.AddAsync(entity);
+           await storeDbContext.SaveChangesAsync();
         }
 
-        public  void DeleteAsync(TEntity entity)
+        public async Task<bool> DeleteAsync(TEntity entity)
         {
             storeDbContext.Remove(entity);
+            var result= await storeDbContext.SaveChangesAsync();
+            if(result<0 ) return false;
+            return true;
+            
         }
 
         public async Task<IEnumerable<TEntity>> GetAllAsync()
@@ -31,9 +36,10 @@ namespace Presistance.Reposatories
            return await storeDbContext.Set<TEntity>().FindAsync(id);
         }
 
-        public void UpadateAsync(TEntity entity)
+        public async Task UpadateAsync(TEntity entity)
         {
             storeDbContext.Update(entity);
+            await storeDbContext.SaveChangesAsync();
         }
     }
 }
