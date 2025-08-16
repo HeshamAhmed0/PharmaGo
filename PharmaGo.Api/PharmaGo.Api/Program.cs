@@ -1,6 +1,8 @@
 
 using System.Reflection.Metadata;
 using Domain.Contracts;
+using Domain.Moduls;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Presistance;
 using Presistance.Reposatories;
@@ -30,8 +32,15 @@ namespace PharmaGo.Api
             builder.Services.AddScoped<IUnitofwork, UnitOfWork>();
             builder.Services.AddScoped<IProductService,ProductServices>();
             builder.Services.AddScoped<IServiceManager,ServiceManager>();
+            builder.Services.AddIdentity<AppUser, IdentityRole>()
+                   .AddEntityFrameworkStores<StoreIdentityDbContext>()
+                   .AddDefaultTokenProviders();
+            builder.Services.AddDbContext<StoreIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
+            });
 
-  
+
             var app = builder.Build();
 
             #region Scop For DbInitializer

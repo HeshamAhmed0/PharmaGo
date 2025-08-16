@@ -10,11 +10,9 @@ namespace Domain.Moduls
     {
         public int CustomerID { get; set; }
         public Customer Customer { get; set; }
-
         public DateTime OrderDate { get; set; } = DateTime.Now;
         public DeliveryMethod DeliveryMethod { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
-
         public ICollection<OrderItem> OrderItems { get; set; }
     }
 }

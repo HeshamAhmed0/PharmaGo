@@ -26,6 +26,12 @@ namespace Presistance.Data.Configrations
             builder.HasMany(O=>O.Orders)
                    .WithOne(C=>C.Customer)
                    .OnDelete(DeleteBehavior.Cascade);
+        
+            builder.HasOne(U => U.AppUser)
+                   .WithOne(C => C.Customer)
+                   .OnDelete(DeleteBehavior.Cascade)
+                   .IsRequired();
+        
         }
         
     }
