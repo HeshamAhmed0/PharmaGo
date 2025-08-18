@@ -9,5 +9,6 @@ namespace Services_Abstraction
     public interface IServiceManager
     {
         IProductService ProductService { get; }
+        ICustomerServices CustomerServices { get; }
     }
 }

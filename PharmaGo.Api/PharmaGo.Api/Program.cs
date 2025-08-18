@@ -32,14 +32,7 @@ namespace PharmaGo.Api
             builder.Services.AddScoped<IUnitofwork, UnitOfWork>();
             builder.Services.AddScoped<IProductService,ProductServices>();
             builder.Services.AddScoped<IServiceManager,ServiceManager>();
-            builder.Services.AddIdentity<AppUser, IdentityRole>()
-                   .AddEntityFrameworkStores<StoreIdentityDbContext>()
-                   .AddDefaultTokenProviders();
-            builder.Services.AddDbContext<StoreIdentityDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
-            });
-
+            
 
             var app = builder.Build();
 
