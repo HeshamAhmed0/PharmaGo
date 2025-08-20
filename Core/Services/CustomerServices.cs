@@ -25,21 +25,37 @@ namespace Services
             var CustomerResult =mapper.Map<CustomerResultDto>(CustomerMapping);
             return CustomerResult;
         }
-        public Task<CustomerResultDto> UpdateCustomerAsync(int Id, CustomerRequestDto customerRequestDto)
+        public async Task<CustomerResultDto> UpdateCustomerAsync(int Id, CustomerRequestDto customerRequestDto)
         {
-            throw new NotImplementedException();
+            var customer =await unitofwork.GenericReposatory<Customer,int>().GetByIdAsync(Id);
+            if (customer is null) throw new Exception($"User With Id : {Id} Is Not Found");
+            var Customermapping =mapper.Map(customerRequestDto, customer);
+            await unitofwork.GenericReposatory<Customer, int>().UpadateAsync(Customermapping);
+            var result = await unitofwork.GenericReposatory<Customer, int>().GetByIdAsync(Id);
+            var mappingForResultDto =mapper.Map<CustomerResultDto>(result);
+            return mappingForResultDto;
         }
-        public Task<bool> DeleteCustomerAsync(int id)
+        public async Task<bool> DeleteCustomerAsync(int id)
         {
-            throw new NotImplementedException();
+           var FindCustomer =await unitofwork.GenericReposatory<Customer,int>().GetByIdAsync(id);
+            if (FindCustomer is null) throw new Exception($"Customer With Id {id} Not Found");
+            var result =await unitofwork.GenericReposatory<Customer,int>().DeleteAsync(FindCustomer);
+            return result;
         }
-        public Task<IEnumerable<CustomerResultDto>> GetAllCustomersAsync()
+        public async Task<IEnumerable<CustomerResultDto>> GetAllCustomersAsync()
         {
-            throw new NotImplementedException();
+            var Customers =await unitofwork.GenericReposatory<Customer,int>().GetAllAsync();
+            if (Customers == null) throw new Exception("Ther Are Not Any Customer !!");
+            var CustomersMapping =mapper.Map<IEnumerable<CustomerResultDto>>(Customers);
+            if (CustomersMapping == null) throw new Exception("Mapping Is Not Correct");
+            return CustomersMapping;
         }
-        public Task<CustomerResultDto> GetCustomerByIdAsync(int ProductID)
+        public async Task<CustomerResultDto> GetCustomerByIdAsync(int CustomerID)
         {
-            throw new NotImplementedException();
+            var Customer  =await unitofwork.GenericReposatory<Customer,int>().GetByIdAsync(CustomerID);
+            if (Customer is null) throw new Exception($"Customer With Id : {CustomerID} Is Not Found");
+            var CustomerMapping =mapper.Map<CustomerResultDto>(Customer);
+            return CustomerMapping;
         }
 
     }
