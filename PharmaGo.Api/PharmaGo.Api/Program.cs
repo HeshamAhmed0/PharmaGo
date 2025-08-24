@@ -2,12 +2,15 @@
 using System.Reflection.Metadata;
 using Domain.Contracts;
 using Domain.Moduls;
+using Domain.Moduls.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Presistance;
 using Presistance.Reposatories;
 using Services;
 using Services_Abstraction;
+using Shared.MedulesDto.AuthModels;
 
 namespace PharmaGo.Api
 {
@@ -32,7 +35,19 @@ namespace PharmaGo.Api
             builder.Services.AddScoped<IUnitofwork, UnitOfWork>();
             builder.Services.AddScoped<IProductService,ProductServices>();
             builder.Services.AddScoped<IServiceManager,ServiceManager>();
-            
+            builder.Services.Configure<JwtOptions>(
+                builder.Configuration.GetSection("JWTOptions")
+                );
+            builder.Services.AddScoped<IAuthServices, AuthServices>();
+            builder.Services.AddIdentity<AppUser, IdentityRole>()
+            .AddEntityFrameworkStores<StoreIdentityDbContext>() //
+            .AddDefaultTokenProviders();
+            builder.Services.AddDbContext<StoreIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
+            });
+
+
 
             var app = builder.Build();
 
