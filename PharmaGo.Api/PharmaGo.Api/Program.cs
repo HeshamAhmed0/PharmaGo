@@ -11,14 +11,51 @@ using Presistance.Reposatories;
 using Services;
 using Services_Abstraction;
 using Shared.MedulesDto.AuthModels;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text.Encodings;
+using System.Text;
 namespace PharmaGo.Api
 {
     public class Program
     {
-        public static  void Main(string[] args)
+        public static  async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+
+            #region JWT
+            // 1. Bind JwtSettings ?? ??? appsettings.json
+            var jwtSettingsSection = builder.Configuration.GetSection(nameof(JwtOptions));
+            builder.Services.Configure<JwtOptions>(jwtSettingsSection);
+
+            var jwtSettings = jwtSettingsSection.Get<JwtOptions>()
+                ?? throw new InvalidOperationException("JWT settings are not configured properly.");
+
+            // 2. Add Authentication & Authorization
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audiences,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecurityKey)),
+                    ClockSkew = TimeSpan.Zero,
+                };
+            });
+            #endregion
 
             // Add services to the container.
             builder.Services.AddAutoMapper(typeof(AssemblyForAutoMapper).Assembly);
@@ -52,10 +89,15 @@ namespace PharmaGo.Api
             var app = builder.Build();
 
             #region Scop For DbInitializer
+
+            using (var Scope = app.Services.CreateScope())
+            {
+                var DbInitializer = Scope.ServiceProvider.GetService<IDbInitializer>();
+               await DbInitializer.InitializeAsync();
+               await DbInitializer.InitializeIdentityAsync();
+            }
               
-            var Scope =app.Services.CreateScope();
-            var DbInitializer =Scope.ServiceProvider.GetService<IDbInitializer>();
-             DbInitializer.InitializeAsync();
+             
 
             #endregion
 
@@ -67,11 +109,10 @@ namespace PharmaGo.Api
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
-
             app.MapControllers();
+
 
             app.Run();
         }

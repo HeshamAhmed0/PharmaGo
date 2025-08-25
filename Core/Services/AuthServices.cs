@@ -14,8 +14,11 @@ using Shared.MedulesDto.AuthModels;
 
 namespace Services
 {
-    public class AuthServices(IOptions<JwtOptions> options,UserManager<AppUser> userManager) : IAuthServices
+    public class AuthServices(IOptions<JwtOptions> options,
+                              UserManager<AppUser> userManager) : IAuthServices
     {
+   
+
         public async Task<bool> FindByEmailAsync(string email)
         {
             var result =await userManager.FindByEmailAsync(email);
@@ -38,11 +41,24 @@ namespace Services
             {
                 throw new Exception($"Create User With UserName {registerDto.UserName} Failed!!");
             }
+           
+            var adminEmails = new List<string> { "admin1@example.com", "admin2@example.com" };
+            List<string> roles = new List<string>();
+            if (adminEmails.Contains(registerDto.Email))
+            {
+                await userManager.AddToRoleAsync(User, "Admin");
+                roles.Add("Admin");
+            }
+            else
+            {
+                await userManager.AddToRoleAsync(User, "User");
+                roles.Add("User");
+            }
             var result = new RegisterResultDto()
             {
                 DispalyName = registerDto.DisplayName,
                 Email = registerDto.Email,
-                Tooken = GenerateJwtToken(User),
+                Tooken = GenerateJwtToken(User,roles),
             };
             return  result;
         }
@@ -52,22 +68,28 @@ namespace Services
             if (User == null) throw new Exception($"Email Or Password Is Not Correct !!");
             var CheckForCreate =await userManager.CheckPasswordAsync(User, loginDto.Password);
              if(CheckForCreate == false) throw new Exception($"Email Or Password Is Not Correct !!");
+             var roles =await userManager.GetRolesAsync(User);
             var result = new LoginResultDto()
             {
                 Email = User.Email,
                 DispalyName=User.DisplayName,
-                Tooken= GenerateJwtToken(User),
+                Tooken= GenerateJwtToken(User,(List<string>)roles),
             };
             return result;
         }
-        private  string GenerateJwtToken(AppUser user)
+        private  string GenerateJwtToken(AppUser user,List<string> roles)
         {
             var JwtParameters = options.Value;
             var claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Name, user.UserName), 
             };
+            foreach(var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
             var SecurityKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtParameters.SecurityKey));
             var token = new JwtSecurityToken
                 (
