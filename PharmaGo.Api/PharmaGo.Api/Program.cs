@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.Encodings;
 using System.Text;
+using System.Security.Claims;
+using Microsoft.OpenApi.Models;
 namespace PharmaGo.Api
 {
     public class Program
@@ -26,18 +28,12 @@ namespace PharmaGo.Api
 
             #region JWT
             // 1. Bind JwtSettings ?? ??? appsettings.json
-            var jwtSettingsSection = builder.Configuration.GetSection(nameof(JwtOptions));
-            builder.Services.Configure<JwtOptions>(jwtSettingsSection);
-
-            var jwtSettings = jwtSettingsSection.Get<JwtOptions>()
-                ?? throw new InvalidOperationException("JWT settings are not configured properly.");
-
-            // 2. Add Authentication & Authorization
+            var jwtSettingsSection = builder.Configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
+           
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
             {
@@ -46,15 +42,48 @@ namespace PharmaGo.Api
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
 
 
-                    ValidIssuer = jwtSettings.Issuer,
-                    ValidAudience = jwtSettings.Audiences,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecurityKey)),
-                    ClockSkew = TimeSpan.Zero,
+                    ValidIssuer = jwtSettingsSection.Issuer,
+                    ValidAudience = jwtSettingsSection.Audiences,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettingsSection.SecurityKey)),
+                    RoleClaimType = ClaimTypes.Role
                 };
             });
+            #endregion
+
+            #region Swagger
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+
+                // ?? ????? Security Scheme ? JWT (Http bearer)
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",     // lowercase ???
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter JWT token only (no 'Bearer ' prefix required)."
+                });
+
+                // ?? ??? ?? ??? Endpoints ???? Security Requirement
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+            });
+
             #endregion
 
             // Add services to the container.
