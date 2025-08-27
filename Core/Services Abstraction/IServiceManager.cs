@@ -11,5 +11,6 @@ namespace Services_Abstraction
         IProductService ProductService { get; }
         ICustomerServices CustomerServices { get; }
         IAuthServices AuthServices { get; }
+        IBasketSerrvice BasketSerrvice { get; }
     }
 }

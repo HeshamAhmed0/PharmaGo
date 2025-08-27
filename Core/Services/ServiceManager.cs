@@ -17,11 +17,15 @@ namespace Services
     public class ServiceManager(IMapper mapper,IUnitofwork unitofwork,
                                 StoreDbContext storeDbContext,
                                 IOptions<JwtOptions> options,
-                                UserManager<AppUser> userManager) : IServiceManager
+                                UserManager<AppUser> userManager,
+                                IBasketReposatory basketReposatory,
+                                IProductService productService) : IServiceManager
     {
         public IProductService ProductService { get; } = new ProductServices(mapper,unitofwork);
         public ICustomerServices CustomerServices { get; } = new CustomerServices(unitofwork,storeDbContext,mapper);
 
         public IAuthServices AuthServices { get; } = new AuthServices(options, userManager);
+
+        public IBasketSerrvice BasketSerrvice { get; } = new BasketService(productService, basketReposatory, mapper);
     }
 }

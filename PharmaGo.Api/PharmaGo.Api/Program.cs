@@ -17,6 +17,8 @@ using System.Text.Encodings;
 using System.Text;
 using System.Security.Claims;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
+using System.IdentityModel.Tokens.Jwt;
 namespace PharmaGo.Api
 {
     public class Program
@@ -29,7 +31,8 @@ namespace PharmaGo.Api
             #region JWT
             // 1. Bind JwtSettings ?? ??? appsettings.json
             var jwtSettingsSection = builder.Configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
-           
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -47,7 +50,8 @@ namespace PharmaGo.Api
                     ValidIssuer = jwtSettingsSection.Issuer,
                     ValidAudience = jwtSettingsSection.Audiences,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettingsSection.SecurityKey)),
-                    RoleClaimType = ClaimTypes.Role
+                    RoleClaimType = ClaimTypes.Role,
+                     NameClaimType = ClaimTypes.NameIdentifier
                 };
             });
             #endregion
@@ -92,7 +96,6 @@ namespace PharmaGo.Api
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
             builder.Services.AddDbContext<StoreDbContext>(options =>
             {
@@ -101,6 +104,8 @@ namespace PharmaGo.Api
             builder.Services.AddScoped<IUnitofwork, UnitOfWork>();
             builder.Services.AddScoped<IProductService,ProductServices>();
             builder.Services.AddScoped<IServiceManager,ServiceManager>();
+            builder.Services.AddScoped<IBasketSerrvice,BasketService>();
+            builder.Services.AddScoped<IBasketReposatory,BasketReposatory>();
             builder.Services.Configure<JwtOptions>(
                 builder.Configuration.GetSection("JWTOptions")
                 );
@@ -112,7 +117,10 @@ namespace PharmaGo.Api
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
             });
-
+            builder.Services.AddSingleton<IConnectionMultiplexer>((serviceprovider) =>
+            {
+                return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis"));
+            });
 
 
             var app = builder.Build();

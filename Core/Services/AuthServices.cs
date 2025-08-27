@@ -73,7 +73,7 @@ namespace Services
             {
                 Email = User.Email,
                 DispalyName=User.DisplayName,
-                Tooken= GenerateJwtToken(User,(List<string>)roles),
+                Tooken= GenerateJwtToken(User,roles.ToList()),
             };
             return result;
         }
@@ -84,6 +84,7 @@ namespace Services
             {
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Name, user.UserName), 
+                new Claim("UserId",user.Id.ToString()),
             };
             foreach(var role in roles)
             {
