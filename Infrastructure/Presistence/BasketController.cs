@@ -11,7 +11,6 @@ using Shared.MedulesDto.BasketDtos;
 
 namespace Presentaion
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class BasketController(IServiceManager serviceManager) :ControllerBase
