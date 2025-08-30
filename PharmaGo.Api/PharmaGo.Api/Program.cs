@@ -118,10 +118,10 @@ namespace PharmaGo.Api
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
             });
-            //builder.Services.AddSingleton<IConnectionMultiplexer>((serviceprovider) =>
-            //{
-            //    return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis"));
-            //});
+            builder.Services.AddSingleton<IConnectionMultiplexer>((serviceprovider) =>
+            {
+                return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis"));
+            });
 
 
             var app = builder.Build();
