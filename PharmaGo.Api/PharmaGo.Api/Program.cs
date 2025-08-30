@@ -30,7 +30,7 @@ namespace PharmaGo.Api
 
             #region JWT
             // 1. Bind JwtSettings ?? ??? appsettings.json
-            var jwtSettingsSection = builder.Configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
+            var jwtSettingsSection = builder.Configuration.GetSection("JWTOptions").Get<JwtOptions>();
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
             builder.Services.AddAuthentication(options =>
@@ -46,12 +46,12 @@ namespace PharmaGo.Api
                     ValidateAudience = true,
                     ValidateLifetime = true,
 
-
-                    ValidIssuer = jwtSettingsSection.Issuer,
+                    ValidIssuers = new[] { "https://localhost:7007", "http://localhost:5096" },
+                    //ValidIssuer = jwtSettingsSection.Issuer,
                     ValidAudience = jwtSettingsSection.Audiences,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettingsSection.SecurityKey)),
                     RoleClaimType = ClaimTypes.Role,
-                     NameClaimType = ClaimTypes.NameIdentifier
+                    NameClaimType = "UserId"
                 };
             });
             #endregion

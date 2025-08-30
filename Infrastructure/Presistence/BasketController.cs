@@ -11,6 +11,7 @@ using Shared.MedulesDto.BasketDtos;
 
 namespace Presentaion
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class BasketController(IServiceManager serviceManager) :ControllerBase
@@ -48,6 +49,15 @@ namespace Presentaion
             return userId;
         }
 
+
+
+        [HttpGet("TestClaims")]
+        [Authorize]
+        public IActionResult TestClaims()
+        {
+            var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
+            return Ok(claims);
+        }
 
 
     }
