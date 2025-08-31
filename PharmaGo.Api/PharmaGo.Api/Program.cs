@@ -34,7 +34,7 @@ namespace PharmaGo.Api
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 
-            builder.Services.Configure<JwtOptions>(o => builder.Configuration.GetSection("JWT").Bind(o));
+            builder.Services.Configure<JwtOptions>(o => builder.Configuration.GetSection("JWTOptions").Bind(o));
 
             builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<StoreIdentityDbContext>()
                                                                          .AddDefaultTokenProviders();

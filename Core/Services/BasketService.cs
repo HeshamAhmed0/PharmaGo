@@ -42,6 +42,11 @@ namespace Services
             {
                 CheckForItem.Quantity += basketDto.Quantity;
             }
+
+            var updatedBasket = await basketReposatory.UpdateBasketById(basket, TimeSpan.FromDays(20));
+            if (updatedBasket == null) throw new Exception("Failed to save basket to Redis");
+
+
             return new BasketResponseDto
             {
                 Id = CustomerId,
@@ -58,6 +63,7 @@ namespace Services
         public async Task<BasketResponseDto> GetBasket(string CustomerId)
         {
            var basket = await basketReposatory.GetBasketById(CustomerId);
+            if (basket == null) throw new Exception("There Are Not Products In You Item!!!");
           var result = mapper.Map<BasketResponseDto>(basket);
             if (result == null) throw new Exception("This Error From Mapping !!");
             return result;
