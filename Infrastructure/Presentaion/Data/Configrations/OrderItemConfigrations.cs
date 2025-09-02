@@ -3,24 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Domain.Moduls;
+using Domain.Moduls.OrderModuls;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Presistance.Data.Configrations
 {
-    public class OrderItemConfigrations : IEntityTypeConfiguration<OrderItem>
+    public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
     {
         public void Configure(EntityTypeBuilder<OrderItem> builder)
         {
-            builder.HasOne(P=>P.Product)
-                   .WithMany()
-                   .OnDelete(DeleteBehavior.Cascade);
-            builder.HasOne(O=>O.Order)
-                   .WithMany(OI => OI.OrderItems)
-                   .OnDelete(DeleteBehavior.Cascade);
-            builder.Property(P => P.Price)
+
+            builder.Property(o => o.Id)
+                   .ValueGeneratedOnAdd();
+
+            builder.Property(oi => oi.Price)
                    .HasColumnType("decimal(18,2)");
+
+            builder.HasOne(oi => oi.Order)
+                   .WithMany(o => o.OrderItems)
+                   .HasForeignKey(oi => oi.OrderId)
+                   .OnDelete(DeleteBehavior.Cascade);
+            builder.Property(oi => oi.Brand).IsRequired(false);
+            builder.Property(oi => oi.Type).IsRequired(false);
+            builder.Property(oi => oi.PictureUrl).IsRequired(false);
+
         }
     }
+
 }

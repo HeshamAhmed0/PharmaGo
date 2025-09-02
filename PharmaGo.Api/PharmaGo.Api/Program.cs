@@ -108,6 +108,7 @@ namespace PharmaGo.Api
             builder.Services.AddScoped<IProductService, ProductServices>();
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
             builder.Services.AddScoped<IBasketSerrvice, BasketService>();
+            builder.Services.AddScoped<IOrderServices, OrderServices>();
             builder.Services.AddScoped<IBasketReposatory, BasketReposatory>();
             builder.Services.Configure<JwtOptions>(
                 builder.Configuration.GetSection("JWTOptions")

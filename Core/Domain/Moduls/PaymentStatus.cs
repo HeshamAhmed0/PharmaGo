@@ -8,8 +8,8 @@ namespace Domain.Moduls
 {
     public enum PaymentStatus
     {
-        Pending,
-        Failed,
-        Success
+        Pending =1,
+        Failed = 2,
+        Success =4,
     }
 }

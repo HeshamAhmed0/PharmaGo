@@ -9,10 +9,10 @@ namespace Services_Abstraction
 {
     public interface ICustomerServices
     {
-        public Task<CustomerResultDto> CreateCustomerAsync(CustomerRequestDto customerRequestDto);
-        public Task<CustomerResultDto> UpdateCustomerAsync(int Id, CustomerRequestDto customerRequestDto);
-        public Task<bool> DeleteCustomerAsync(int id);
-        public Task<CustomerResultDto> GetCustomerByIdAsync(int ProductID);
+        public Task<CustomerResultDto> CreateCustomerAsync(string id,CustomerRequestDto customerRequestDto);
+        public Task<CustomerResultDto> UpdateCustomerAsync(string Id, CustomerRequestDto customerRequestDto);
+        public Task<bool> DeleteCustomerAsync(string id);
+        public Task<CustomerResultDto> GetCustomerByIdAsync(string ProductID);
         public Task<IEnumerable<CustomerResultDto>> GetAllCustomersAsync();
     }
 }

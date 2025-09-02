@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services_Abstraction;
@@ -11,38 +13,45 @@ using Shared.MedulesDto;
 
 namespace Presentaion
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class CustomerController(IServiceManager serviceManager) :ControllerBase
     {
-        [HttpPost]
+        [HttpPost("CreateCustomer")]
         public async Task<IActionResult> CreateCustomer(CustomerRequestDto customerRequestDto)
         {
-          var result= await serviceManager.CustomerServices.CreateCustomerAsync(customerRequestDto);
+            var UserId =User.FindFirstValue("UserID");
+          var result= await serviceManager.CustomerServices.CreateCustomerAsync(UserId,customerRequestDto);
             return Ok(result);
         }
-        [HttpPost("Update")]
-        public async Task<IActionResult> UpdateCustomer(int Id, CustomerRequestDto customerRequestDto)
+        [HttpPost("UpdateCurrentCustomer")]
+        public async Task<IActionResult> UpdateCustomer( CustomerRequestDto customerRequestDto)
         {
-            var result =await serviceManager.CustomerServices.UpdateCustomerAsync(Id, customerRequestDto);
+            var UserId = User.FindFirstValue("UserID");
+
+            var result =await serviceManager.CustomerServices.UpdateCustomerAsync(UserId, customerRequestDto);
             return Ok(result);
         }
-        [HttpGet]
-        public async Task<IActionResult> GetCustomerById(int Id)
+        [HttpGet("GetCurrentCustomer")]
+        public async Task<IActionResult> GetCurrentCustomer()
         {
-            var result =await serviceManager.CustomerServices.GetCustomerByIdAsync(Id);
+            var UserId = User.FindFirstValue("UserID");
+            var result =await serviceManager.CustomerServices.GetCustomerByIdAsync(UserId);
             return Ok(result);
         }
-        [HttpGet("All")]
+        [HttpGet("AllCustomers")]
         public async Task<IActionResult> GetAllCustomers()
         {
             var result =await serviceManager.CustomerServices.GetAllCustomersAsync();
             return Ok(result);
         }
-        [HttpDelete]
-        public async Task<IActionResult> DeleteCustomer(int Id)
+        [HttpDelete("DeleteCurrentCustomer")]
+        public async Task<IActionResult> DeleteCurrentCustomer()
         {
-            var result =await serviceManager.CustomerServices.DeleteCustomerAsync(Id);
+            var UserId = User.FindFirstValue("UserID");
+
+            var result =await serviceManager.CustomerServices.DeleteCustomerAsync(UserId);
             return Ok(result);
         }
     }

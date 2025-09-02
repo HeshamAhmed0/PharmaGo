@@ -12,26 +12,23 @@ using Presistance;
 namespace Presistance.Data.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    [Migration("20250812063849_UpdateForCustomerTable")]
-    partial class UpdateForCustomerTable
+    [Migration("20250901144145_UpdateDataBase")]
+    partial class UpdateDataBase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.19")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Domain.Moduls.Customer", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -50,20 +47,26 @@ namespace Presistance.Data.Migrations
                     b.ToTable("Customer");
                 });
 
-            modelBuilder.Entity("Domain.Moduls.Order", b =>
+            modelBuilder.Entity("Domain.Moduls.OrderModuls.Order", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("BuyerEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CustomerID")
-                        .HasColumnType("int");
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("DeliveryMethod")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DeliveryMethodId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
@@ -72,14 +75,17 @@ namespace Presistance.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("Subtotal")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerID");
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("Order");
                 });
 
-            modelBuilder.Entity("Domain.Moduls.OrderItem", b =>
+            modelBuilder.Entity("Domain.Moduls.OrderModuls.OrderItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -87,8 +93,14 @@ namespace Presistance.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
+                    b.Property<string>("Brand")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PictureUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -96,14 +108,19 @@ namespace Presistance.Data.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
-
-                    b.HasIndex("ProductId");
 
                     b.ToTable("OrderItem");
                 });
@@ -140,8 +157,8 @@ namespace Presistance.Data.Migrations
                 {
                     b.OwnsOne("Domain.Moduls.Address", "Address", b1 =>
                         {
-                            b1.Property<int>("CustomerId")
-                                .HasColumnType("int");
+                            b1.Property<string>("CustomerId")
+                                .HasColumnType("nvarchar(450)");
 
                             b1.Property<string>("City")
                                 .IsRequired()
@@ -170,34 +187,72 @@ namespace Presistance.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Moduls.Order", b =>
+            modelBuilder.Entity("Domain.Moduls.OrderModuls.Order", b =>
                 {
                     b.HasOne("Domain.Moduls.Customer", "Customer")
                         .WithMany("Orders")
-                        .HasForeignKey("CustomerID")
+                        .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.OwnsOne("Domain.Moduls.OrderModuls.ShippingAdress", "ShippingAddress", b1 =>
+                        {
+                            b1.Property<Guid>("OrderId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasMaxLength(50)
+                                .HasColumnType("nvarchar(50)")
+                                .HasColumnName("City");
+
+                            b1.Property<string>("Country")
+                                .IsRequired()
+                                .HasMaxLength(50)
+                                .HasColumnType("nvarchar(50)")
+                                .HasColumnName("Country");
+
+                            b1.Property<string>("FirstName")
+                                .IsRequired()
+                                .HasMaxLength(50)
+                                .HasColumnType("nvarchar(50)")
+                                .HasColumnName("FirstName");
+
+                            b1.Property<string>("LastName")
+                                .IsRequired()
+                                .HasMaxLength(50)
+                                .HasColumnType("nvarchar(50)")
+                                .HasColumnName("LastName");
+
+                            b1.Property<string>("Street")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("Street");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("Order");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
                     b.Navigation("Customer");
+
+                    b.Navigation("ShippingAddress")
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Moduls.OrderItem", b =>
+            modelBuilder.Entity("Domain.Moduls.OrderModuls.OrderItem", b =>
                 {
-                    b.HasOne("Domain.Moduls.Order", "Order")
+                    b.HasOne("Domain.Moduls.OrderModuls.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Moduls.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Order");
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Domain.Moduls.Customer", b =>
@@ -205,7 +260,7 @@ namespace Presistance.Data.Migrations
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("Domain.Moduls.Order", b =>
+            modelBuilder.Entity("Domain.Moduls.OrderModuls.Order", b =>
                 {
                     b.Navigation("OrderItems");
                 });
