@@ -22,7 +22,7 @@ namespace Domain.Moduls.OrderModuls
             public int DeliveryMethodId { get; set; }
 
 
-        public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+            public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
             public decimal Subtotal { get; set; }
             public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;

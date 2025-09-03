@@ -14,6 +14,7 @@ namespace Presistance.Reposatories
         public async Task AddAsync(TEntity entity)
         {
            await storeDbContext.AddAsync(entity);
+            await storeDbContext.SaveChangesAsync();
         }
 
         public async Task<bool> DeleteAsync(TEntity entity)

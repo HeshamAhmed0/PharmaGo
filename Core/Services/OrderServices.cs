@@ -49,10 +49,10 @@ namespace Services
            
             };
             await unitofwork.GenericReposatory<Order,Guid>().AddAsync(Order);
-            var result = await unitofwork.SaveChangesAsync();
-            if (result <= 0) throw new Exception("Create Order Failed !!!");
+            await basketSerrvice.DeleteItem(BasketId);
             return new OrderResponseDto()
             {
+                OredrId=Order.Id,
                 DeliveryMethod = Order.DeliveryMethod.ToString(),
                 OrderDate = Order.OrderDate,
                 ShippingAddress = createOrderDto.ShippingAddress,

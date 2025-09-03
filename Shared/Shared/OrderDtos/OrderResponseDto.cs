@@ -8,7 +8,7 @@ namespace Shared.OrderDtos
 {
     public class OrderResponseDto
     {
-       public string OredrId { get; set; }
+       public Guid OredrId { get; set; }
        public string CustomerEmail { get; set; }
        public DateTime OrderDate { get; set; }
 
