@@ -17,10 +17,10 @@ namespace Presistance.Reposatories
         public async Task<CustomerBasket> GetBasketById(string Id)
         {
            var redis =await database.StringGetAsync(Id);
-            if (string.IsNullOrEmpty(redis)) return null;
+            if (string.IsNullOrEmpty(redis)) return null!;
 
             var basket =JsonSerializer.Deserialize<CustomerBasket>(redis);
-            if(basket == null) return null; 
+            if(basket == null) return null!; 
             return basket;
         }
 
@@ -28,7 +28,7 @@ namespace Presistance.Reposatories
         {
             var basketAsJson =JsonSerializer.Serialize(basket);
             var SetAtRedis = await database.StringSetAsync(basket.Id, basketAsJson, TimeSpan.FromDays(20));
-            if (SetAtRedis == false) return null;
+            if (SetAtRedis == false) return null!;
             return await GetBasketById(basket.Id);
         }
         public async Task<bool> DeleteBasketById(string Id)
