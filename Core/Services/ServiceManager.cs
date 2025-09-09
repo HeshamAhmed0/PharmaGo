@@ -31,5 +31,7 @@ namespace Services
         public IBasketSerrvice BasketSerrvice { get; } = new BasketService(productService, basketReposatory, mapper);
 
         public IOrderServices OrderServices { get; } = new OrderServices(basketSerrvice, unitofwork);
+
+        public IPaymentService PaymentsService { get; } = new PaymentService(basketSerrvice, basketReposatory, productService);
     }
 }

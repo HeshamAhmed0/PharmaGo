@@ -19,6 +19,7 @@ using System.Security.Claims;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
+using Stripe;
 namespace PharmaGo.Api
 {
     public class Program
@@ -94,6 +95,11 @@ namespace PharmaGo.Api
 
             #endregion
 
+            #region Stripe
+            var stripeSecretKey = builder.Configuration["StripeSettings:SecretKey"];
+            StripeConfiguration.ApiKey = stripeSecretKey;
+            #endregion
+
             // Add services to the container.
             builder.Services.AddAutoMapper(typeof(AssemblyForAutoMapper).Assembly);
 
@@ -109,6 +115,7 @@ namespace PharmaGo.Api
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
             builder.Services.AddScoped<IBasketSerrvice, BasketService>();
             builder.Services.AddScoped<IOrderServices, OrderServices>();
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
             builder.Services.AddScoped<IBasketReposatory, BasketReposatory>();
             builder.Services.Configure<JwtOptions>(
                 builder.Configuration.GetSection("JWTOptions")

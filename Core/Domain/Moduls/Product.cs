@@ -15,10 +15,6 @@ namespace Domain.Moduls
         public decimal ProductPrice { get; set; } 
 
         public string PictureUrl { get; set; } = null!;
-        public string Company_name { get; set; } = null!;
-        public DateTime Expiry_Date { get; set; }
-        public string Quantity { get; set; } = null!;
-
-
+      
     }
 }

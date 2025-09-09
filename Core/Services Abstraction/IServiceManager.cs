@@ -13,5 +13,6 @@ namespace Services_Abstraction
         IAuthServices AuthServices { get; }
         IBasketSerrvice BasketSerrvice { get; }
         IOrderServices OrderServices { get; }
+        IPaymentService PaymentsService { get; }
     }
 }
