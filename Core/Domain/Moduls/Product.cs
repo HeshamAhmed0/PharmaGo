@@ -14,7 +14,7 @@ namespace Domain.Moduls
 
         public decimal ProductPrice { get; set; } 
 
-        public string PictureUrl { get; set; } = null!;
+        //public string PictureUrl { get; set; } = null!;
       
     }
 }
